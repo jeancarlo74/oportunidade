@@ -1,0 +1,7 @@
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\bin\Debug\GetFeedRss.exe.config
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\bin\Debug\GetFeedRss.exe
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\bin\Debug\GetFeedRss.pdb
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\obj\Debug\GetFeedRss.csprojAssemblyReference.cache
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\obj\Debug\GetFeedRss.csproj.CoreCompileInputs.cache
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\obj\Debug\GetFeedRss.exe
+C:\Users\Resource\Source\Repos\GetFeedRss\GetFeedRss\obj\Debug\GetFeedRss.pdb

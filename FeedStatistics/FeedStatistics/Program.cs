@@ -12,6 +12,8 @@ namespace FeedStatistics
 
             Feed feed = new Feed(url);
 
+            //feed.TamanhoMinimoPalavras = 3;
+
             feed.Artigos = new List<string>
                 { "o", "a", "os", "as", "um", "uma", "uns", "umas" };
 
@@ -20,10 +22,11 @@ namespace FeedStatistics
                 ,"em", "no", "na", "nos", "nas", "por", "per", "pelo", "pela", "pelos", "pelas"
                 , "num", "numa", "nuns", "numas","de", "dum", "duma", "duns", "dumas"};
 
-            feed.FrasesParaExclusao = new List<string>
+            feed.FrasesDesconsiderar = new List<string>
                 { "O post", "apareceu primeiro em", "Blog Minuto Seguros" };
 
-            if (!feed.CarregarUltimosTopicos(numeroDeTopicos: 10, tamanhoMinimoPalavra: 0))
+
+            if (!feed.CarregarUltimosTopicos(numeroDeTopicos: 10))
             {
                 Console.WriteLine($"Não foi possível carregar o Feed '{url}'");
                 Console.Read();
@@ -38,7 +41,7 @@ namespace FeedStatistics
             Console.WriteLine("Quantidade de palavras por tópico (útimos 10 tópicos):");
             Console.Write(feed.ObterEstatisticasPorTopico());
 
-            Console.WriteLine("\nDez principais palavras abordadas:");
+            Console.WriteLine($"\nDez principais palavras abordadas{(feed.TamanhoMinimoPalavras.Equals(0) ? "" : $" (tamanho mínimo de {feed.TamanhoMinimoPalavras})")}:");
             Console.Write(feed.ObterEstatisticasDoFeed(numeroPalavrasMaisCitadas: 10));
 
             Console.Read();

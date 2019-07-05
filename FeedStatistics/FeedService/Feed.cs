@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace FeedServices
@@ -16,14 +15,20 @@ namespace FeedServices
         public List<Topico> Topicos { get; set; }
         public List<string> Artigos { get; set; }
         public List<string> Preposicoes { get; set; }
-        public List<string> FrasesParaExclusao { get; set; }
+        public List<string> FrasesDesconsiderar { get; set; }
+        public int TamanhoMinimoPalavras { get;  set; }
 
         public Feed(string url)
         {
             _url = url;
         }
 
-        public bool CarregarUltimosTopicos(int numeroDeTopicos, int tamanhoMinimoPalavra)
+        /// <summary>
+        /// Carrega os últimos tópicos publicados do Feed
+        /// </summary>
+        /// <param name="numeroDeTopicos"></param>
+        /// <returns>true: Carregado com Sucesso | false: Falha ao carregar tópicos do Feed</returns>
+        public bool CarregarUltimosTopicos(int numeroDeTopicos)
         {
             try
             {
@@ -42,12 +47,10 @@ namespace FeedServices
 
                 foreach (SyndicationItem item in feedLastItens)
                 {
-                    string sumario = TextHelpers.RemoveHtmlTags(item.Summary.Text);
                     string titulo = TextHelpers.RemoveHtmlTags(item.Title.Text);
+                    string sumario = TextHelpers.RemoveHtmlTags(item.Summary.Text);
 
-                    var metricas = ObterMetricasDePalavras(sumario, tamanhoMinimoPalavra);
-
-                    Topicos.Add(item: new Topico(titulo, metricas));
+                    Topicos.Add(item: new Topico(this, titulo, sumario));
                 }
 
                 return true;
@@ -59,6 +62,10 @@ namespace FeedServices
             }
         }
 
+        /// <summary>
+        /// Obtém a contagem de palavra do Feed por Tópico
+        /// </summary>
+        /// <returns>Texto com a contagem</returns>
         public string ObterEstatisticasPorTopico()
         {
             string resultado = "";
@@ -70,7 +77,11 @@ namespace FeedServices
 
             return resultado;
         }
-
+        /// <summary>
+        /// Obter a contagem de palavras do Feed
+        /// </summary>
+        /// <param name="numeroPalavrasMaisCitadas">Quantidade de Palavras retornadas</param>
+        /// <returns></returns>
         public string ObterEstatisticasDoFeed(int numeroPalavrasMaisCitadas)
         {
             string resultado = "";
@@ -80,7 +91,9 @@ namespace FeedServices
             foreach (var topico in Topicos)
             {
                 int ocorrencias = 0;
-                foreach (var item in topico.Metricas)
+
+                var metricas = topico.ObterMetricasDePalavras();
+                foreach (var item in metricas)
                 {
                     if (metricasDoFeed.TryGetValue(item.Palavra, out ocorrencias))
                     {
@@ -100,26 +113,6 @@ namespace FeedServices
                           .ForEach(f => resultado += $"{f.Value} - {f.Key}\n");
 
             return resultado;
-        }
-
-        private List<Metrica> ObterMetricasDePalavras(string texto, int tamanhoMinimoPalavra)
-        {
-            FrasesParaExclusao.ForEach(s => texto = texto.Replace(s, ""));
-
-            var metricas = Regex.Split(texto.ToLower(), @"\W+")
-                                .Where(s => !Artigos.Contains(s) &&
-                                            !Preposicoes.Contains(s) &&
-                                            !string.IsNullOrEmpty(s)  &&
-                                            s.Length >= tamanhoMinimoPalavra)
-                                .GroupBy(s => s)
-                                .Select(group => new Metrica
-                                {
-                                    Palavra = group.Key,
-                                    NumeroOcorrecias = group.Count()
-                                })
-                                .ToList();
-
-            return metricas;
         }
     }
 }
